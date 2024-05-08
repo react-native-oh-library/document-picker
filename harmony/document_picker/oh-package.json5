@@ -1,0 +1,16 @@
+{
+  "name": "@react-native-oh-tpl/document_picker",
+  "version": "9.2.0-1.0.0",
+  "description": "A react native interface to access documents from dropbox, google drive, iCloud..",
+  "main": "Index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@rnoh/react-native-openharmony": "file:../react_native_openharmony",
+    "mime": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/mime": "3.0.3"
+  },
+  "dynamicDependencies": {}
+}

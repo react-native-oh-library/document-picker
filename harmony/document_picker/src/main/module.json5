@@ -1,0 +1,9 @@
+{
+  "module": {
+    "name": "document_picker",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ],
+  }
+}

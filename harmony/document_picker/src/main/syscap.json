@@ -1,0 +1,15 @@
+{
+  "development": {
+    "addedSysCaps": [
+      "SystemCapability.FileManagement.UserFileService.FolderSelection"
+    ]
+  },
+  "production": {
+    "addedSysCaps": [
+      "SystemCapability.FileManagement.UserFileService.FolderSelection"
+    ]
+  },
+  "devices": {
+    "general" : ["default"]
+  }
+}

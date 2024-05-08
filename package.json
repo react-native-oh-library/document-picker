@@ -1,6 +1,6 @@
 {
-  "name": "react-native-document-picker",
-  "version": "9.2.0",
+  "name": "@react-native-oh-tpl/react-native-document-picker",
+  "version": "9.2.0-0.0.1",
   "description": "A react native interface to access documents from dropbox, google drive, iCloud...",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -13,6 +13,7 @@
     "android",
     "ios",
     "windows",
+    "harmony",
     "cpp",
     "react-native-document-picker.podspec",
     "!lib/typescript/example",
@@ -41,6 +42,12 @@
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "com.reactnativedocumentpicker"
+    }
+  },
+  "harmony": {
+    "alias": "react-native-document-picker",
+    "codegenConfig": {
+      "specPaths": ["./src"]
     }
   },
   "keywords": [
@@ -140,7 +147,8 @@
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
+    "lib/",
+    "harmony"
   ],
   "react-native-builder-bob": {
     "source": "src",
