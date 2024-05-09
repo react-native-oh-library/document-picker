@@ -4,6 +4,7 @@ import type { PlatformTypes, SupportedPlatforms } from './fileTypes'
 import { perPlatformTypes } from './fileTypes'
 import { NativeDocumentPicker } from './NativeDocumentPicker'
 
+
 export type DocumentPickerResponse = {
   uri: string
   name: string | null
@@ -144,7 +145,9 @@ const E_DOCUMENT_PICKER_IN_PROGRESS = 'ASYNC_OP_IN_PROGRESS'
 export type NativeModuleErrorShape = Error & { code?: string }
 
 export function isCancel(err: unknown): boolean {
-  return isErrorWithCode(err, E_DOCUMENT_PICKER_CANCELED)
+  return (Platform.OS as typeof Platform.OS & 'harmony') === 'harmony' ?
+   isErrorWithMessage(err, E_DOCUMENT_PICKER_CANCELED) :
+   isErrorWithCode(err, E_DOCUMENT_PICKER_CANCELED)
 }
 
 export function isInProgress(err: unknown): boolean {
@@ -155,6 +158,14 @@ function isErrorWithCode(err: unknown, errorCode: string): boolean {
   if (err && typeof err === 'object' && 'code' in err) {
     const nativeModuleErrorInstance = err as NativeModuleErrorShape
     return nativeModuleErrorInstance?.code === errorCode
+  }
+  return false
+}
+
+function isErrorWithMessage(err: unknown, errorCode: string): boolean {
+  if (err && typeof err === 'object' && 'message' in err) {
+    const nativeModuleErrorInstance = err as NativeModuleErrorShape
+    return nativeModuleErrorInstance?.message === errorCode
   }
   return false
 }

@@ -23,21 +23,31 @@
  */
 
 import { TM } from '@rnoh/react-native-openharmony/generated/ts';
-import { TurboModule } from '@rnoh/react-native-openharmony/ts';
+import { RNOHLogger, TurboModule } from '@rnoh/react-native-openharmony/ts';
 import { PickerOptions } from './FileTypes';
 import picker from '@ohos.file.picker';
 import fileuri from '@ohos.file.fileuri';
 import fs, { ReadOptions } from '@ohos.file.fs';
-import logger from './Logger';
 import { BusinessError } from '@kit.BasicServicesKit';
 import util from '@ohos.util';
 import mime from "mime";
 
+const CANCELED_ERROR_CODE = 'DOCUMENT_PICKER_CANCELED';
+const LOGGER_NAME = 'DocumentPicker';
 
 export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocumentPicker.Spec {
 
   private documentPicker: picker.DocumentViewPicker = new picker.DocumentViewPicker();
+  public logger: RNOHLogger;
 
+  constructor(ctx) {
+    super(ctx);
+    this.logger = this.ctx.logger.clone(LOGGER_NAME)
+  }
+
+  /*
+   * 获取常量，暂未用到
+   */
   getConstants(): Object {
     return {};
   }
@@ -70,37 +80,6 @@ export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocum
   }
 
   /*
-   * 流式读写 使用系统fs.copyFile会报错
-   *
-   * @param source 原文件沙箱路径
-   * @param dest 目标沙箱路径
-   */
-  private async copyFile(source: string, dest: string): Promise<void> {
-    // 打开文件流
-    let inputStream = fs.createStreamSync(source, 'r+');
-    let outputStream = fs.createStreamSync(dest, "w+");
-    // 以流的形式读取源文件内容并写入目的文件
-    let bufSize = 4096;
-    let readSize = 0;
-    let buf = new ArrayBuffer(bufSize);
-    let readOptions: ReadOptions = {
-      offset: readSize,
-      length: bufSize
-    };
-    let readLen = await inputStream.read(buf, readOptions);
-    readSize += readLen;
-    while (readLen > 0) {
-      await outputStream.write(buf);
-      readOptions.offset = readSize;
-      readLen = await inputStream.read(buf, readOptions);
-      readSize += readLen;
-    }
-    // 关闭文件流
-    inputStream.closeSync();
-    outputStream.closeSync();
-  }
-
-  /*
    * 有传入的copyTo选项，每次会新建UUID目录且文件拷贝到该目录下, dir参数指定是在哪个目录下。
    *
    * @param sourceUri 源文件uri
@@ -113,7 +92,7 @@ export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocum
     const destUUIdDir =  dirPath + '/' + util.generateRandomUUID();
     const destFilePath = `${destUUIdDir}/${sourceUri.name ?? new Date().getTime()}`;
     await fs.mkdir(destUUIdDir, true);
-    await this.copyFile(sourceUri.path, destFilePath);
+    await copyFile(sourceUri.path, destFilePath);
     return destFilePath;
   }
 
@@ -150,7 +129,6 @@ export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocum
    * 根据传入的选择参数调用 documentPicker
    */
   async pick(options: PickerOptions): Promise<TM.RNDocumentPicker.DocumentPickerResponse[]> {
-    this.ctx.rnInstance.subscribeToLifecycleEvents
     try {
       const pickerOpt = new picker.DocumentSelectOptions();
       if (canIUse('SystemCapability.FileManagement.UserFileService.FolderSelection')) {
@@ -162,18 +140,25 @@ export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocum
         pickerOpt.maxSelectNumber = 1;
       };
       const pickerRes = await this.documentPicker.select(pickerOpt);
+      // 选择为空：用户取消了
+      if (!pickerRes.length) {
+        throw new PickCancelError()
+      };
       const parseRes = await Promise.allSettled(
         pickerRes.map(uri => this.parseFileByFileUri(uri, options.copyTo))
       );
       return parseRes.map(v => v.status === 'fulfilled' && v.value);
     } catch (err) {
-      let e: BusinessError = err;
-      logger.info(`${e.code} ${e.message}`);
+      this.logger.info(`${err.code} ${err.message}`);
+      if (err instanceof PickCancelError) {
+        console.log(JSON.stringify(err));
+        throw err;
+      }
     }
   }
 
   async releaseSecureAccess(_uris: string[]): Promise<void> {
-    return
+    return;
   }
 
   async pickDirectory(): Promise<TM.RNDocumentPicker.DirectoryPickerResponse> {
@@ -186,7 +171,46 @@ export class DocumentPickerTurboModule extends TurboModule implements TM.RNDocum
   }
 
   public __onDestroy__(): void {
-    logger.info('RNDocumentPick destroy!');
+    this.logger.info('RNDocumentPick destroy!');
   }
 
+}
+
+/*
+ * 流式读写 使用系统fs.copyFile会报错
+ *
+ * @param source 原文件沙箱路径
+ * @param dest 目标沙箱路径
+ */
+async function copyFile(source: string, dest: string): Promise<void> {
+  // 打开文件流
+  let inputStream = fs.createStreamSync(source, 'r+');
+  let outputStream = fs.createStreamSync(dest, "w+");
+  // 以流的形式读取源文件内容并写入目的文件
+  let bufSize = 4096;
+  let readSize = 0;
+  let buf = new ArrayBuffer(bufSize);
+  let readOptions: ReadOptions = {
+    offset: readSize,
+    length: bufSize
+  };
+  let readLen = await inputStream.read(buf, readOptions);
+  readSize += readLen;
+  while (readLen > 0) {
+    await outputStream.write(buf);
+    readOptions.offset = readSize;
+    readLen = await inputStream.read(buf, readOptions);
+    readSize += readLen;
+  }
+  // 关闭文件流
+  inputStream.closeSync();
+  outputStream.closeSync();
+}
+
+/*
+ * 取消选择抛出错误, 目前rn框架不支持抛出 message以外的属性
+ */
+class PickCancelError extends Error {
+  // code: string = CANCELED_ERROR_CODE;
+  message: string = CANCELED_ERROR_CODE
 }
