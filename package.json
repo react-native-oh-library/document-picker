@@ -36,18 +36,12 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios"
   },
-  "codegenConfig": {
-    "name": "rndocumentpicker",
-    "type": "modules",
-    "jsSrcsDir": "src",
-    "android": {
-      "javaPackageName": "com.reactnativedocumentpicker"
-    }
-  },
   "harmony": {
     "alias": "react-native-document-picker",
     "codegenConfig": {
-      "specPaths": ["./src"]
+      "specPaths": [
+        "./src"
+      ]
     }
   },
   "keywords": [
@@ -165,7 +159,8 @@
     ]
   },
   "dependencies": {
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "react-native-document-picker": "^9.2.0"
   },
   "resolutions": {
     "@types/react": "^18.2.6"
