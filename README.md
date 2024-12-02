@@ -1,11 +1,13 @@
-# react-native-document-picker
+# @react-native-oh-tpl/react-native-document-picker
 
-📣📣 A full rewrite of the library is [AVAILABLE](https://github.com/react-native-documents/document-picker/issues/603). 📣📣
+This project is based on [react-native-document-picker (react-native-document-picker)](https://github.com/react-native-documents/document-picker)
 
-See the new [docs here](https://react-native-documents.github.io/).
+## Documentation
 
----
+- [中文](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-cn/react-native-document-picker.md)
 
-🚧🚧 GH discussions available 🚧🚧
+- [English](https://gitee.com/react-native-oh-library/usage-docs/blob/master/en/react-native-document-picker.md)
 
-If you want to ask questions, we opened [GH discussions](https://github.com/rnmods/react-native-document-picker/discussions) for that purpose! 🤗 Issue tracker is reserved for bugs and feature requests only and issues not following the issue template can be closed. Thank you!
+## License
+
+This library is licensed under [The MIT License (MIT)](https://github.com/react-native-oh-library/document-picker/blob/sig/LICENSE.md)

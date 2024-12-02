@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "react-native-document-picker",
+        "License": "MIT License",
+        "License File": "https://github.com/react-native-documents/document-picker/blob/master/LICENSE.md",
+        "Version Number": "9.2.0",
+        "Owner" : "xiafeng@huawei.com",
+        "Upstream URL": "https://github.com/react-native-documents/document-picker",
+        "Description": "A react native interface to access documents from dropbox, google drive, iCloud..."
+    }
+]
