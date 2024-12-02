@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-oh-tpl/react-native-document-picker",
-  "version": "9.2.0-0.0.2",
+  "name": "@react-native-oh-tpl/document_picker",
+  "version": "9.2.0-1.0.0",
   "description": "A react native interface to access documents from dropbox, google drive, iCloud..",
   "main": "Index.ets",
   "author": "",
